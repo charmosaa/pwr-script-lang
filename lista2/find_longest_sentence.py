@@ -1,6 +1,5 @@
 import utils
-import sys
 
 if __name__ == "__main__":  
-    sentences = utils.get_longest(sys.stdin)
+    sentences = utils.get_longest()
     print(sentences)

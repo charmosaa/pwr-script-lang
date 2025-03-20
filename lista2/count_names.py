@@ -4,6 +4,7 @@ def count_names():
     sentences_with_names = 0
     current_names = 0
     all_sentences = 0
+    
     for line in sys.stdin:
         line.strip()
         for word in line.split():

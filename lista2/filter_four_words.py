@@ -1,4 +1,4 @@
-import utils as utils
+import utils 
 
 def max_four_words(sentence):
     return len(sentence.split(" ")) <= 4

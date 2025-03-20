@@ -1,4 +1,4 @@
-import utils as utils
+import utils
 
 def questions_and_exclamations(sentence):
     return sentence[-1] in "?!"
