@@ -4,19 +4,34 @@ def count_names():
     sentences_with_names = 0
     current_names = 0
     all_sentences = 0
-    
-    for line in sys.stdin:
-        line.strip()
-        for word in line.split():
+    in_sentence = False
 
-            if(word[0].isupper()):
-                current_names += 1
+    try:
+        for line in sys.stdin:
+            line = line.strip()
 
-            if word[-1] in ".!?":
-                all_sentences += 1
-                if current_names > 1:
-                    sentences_with_names += 1
-                current_names = 0
+            if not line:
+                if in_sentence:
+                    all_sentences += 1
+                    if current_names > 1:
+                        sentences_with_names += 1
+                    current_names = 0
+                    in_sentence = False
+                continue
+
+            for word in line.split():
+                in_sentence = True
+                if(word[0].isupper()):
+                    current_names += 1
+
+                if word[-1] in ".!?":
+                    all_sentences += 1
+                    if current_names > 1:
+                        sentences_with_names += 1
+                    current_names = 0
+                    in_sentence = False
+    except Exception as e:
+        print(f"Unexpected error: {e}", file=sys.stderr)
 
     return sentences_with_names, all_sentences
 

@@ -10,6 +10,10 @@ def get_threshold():
         for line in sys.stdin:
             line = line.strip()
             if not line:
+                if sentence:
+                    sentences.append(sentence.strip())      # strip trailing spaces
+                    lengths.append(len(sentence.strip()))   # add length to the length list
+                    sentence = ""
                 continue                                    # skip empty lines
 
             for word in line.split():
