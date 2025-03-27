@@ -1,10 +1,10 @@
 import sys
 import datetime
 import filter_logs as fl
-import re
+import validator as vd
 from collections import namedtuple
 
-# Defining a namedtuple to represent each HTTP request for beter readability
+# namedtuple to represent each HTTP request for better readability
 HttpRequest = namedtuple('HttpRequest', [
     'timestamp', 'uid', 'orig_host', 'orig_port', 
     'resp_host', 'resp_port', 'method', 'host', 'uri', 'status_code'
@@ -30,12 +30,7 @@ def split_log(line):
         method = parts[7]
         host = parts[8]
         uri = parts[9]
-        
-        match = re.search(r'\s(\d{3})\s', line)  # Looks for a 3-digit number surrounded by spaces
-        if match:
-            status_code = match.group(1)
-        else:
-            status_code = ''
+        status_code = vd.parse_code(parts[14]) 
 
         return HttpRequest(ts, uid, orig_h, orig_p, resp_h, resp_p, method, host, uri, status_code)
     
@@ -58,5 +53,5 @@ def sort_log(log, index):
 if __name__ == "__main__":
     logs = read_log()
 
-    for log in fl.get_entries_by_extension(logs, 'html'):
+    for log in fl.get_failed_reads(logs):
         print(log)
