@@ -1,0 +1,37 @@
+[
+    {
+        "timestamp": "2025-04-02T09:58:05.808030",
+        "original_file": "C:\\Users\\marty\\projects\\script_lang\\lista4\\mediafiles\\blank.mp4",
+        "output_format": "webm",
+        "output_file": "C:\\Users\\marty\\projects\\script_lang\\lista4\\CONV\\202504020958-blank.webm",
+        "program_used": "ffmpeg"
+    },
+    {
+        "timestamp": "2025-04-02T09:58:07.975210",
+        "original_file": "C:\\Users\\marty\\projects\\script_lang\\lista4\\mediafiles\\cat.jpg",
+        "output_format": "png",
+        "output_file": "C:\\Users\\marty\\projects\\script_lang\\lista4\\CONV\\202504020958-cat.png",
+        "program_used": "magick"
+    },
+    {
+        "timestamp": "2025-04-02T09:58:08.026402",
+        "original_file": "C:\\Users\\marty\\projects\\script_lang\\lista4\\mediafiles\\cat2.jpg",
+        "output_format": "png",
+        "output_file": "C:\\Users\\marty\\projects\\script_lang\\lista4\\CONV\\202504020958-cat2.png",
+        "program_used": "magick"
+    },
+    {
+        "timestamp": "2025-04-02T09:58:08.083399",
+        "original_file": "C:\\Users\\marty\\projects\\script_lang\\lista4\\mediafiles\\dog.jpg",
+        "output_format": "png",
+        "output_file": "C:\\Users\\marty\\projects\\script_lang\\lista4\\CONV\\202504020958-dog.png",
+        "program_used": "magick"
+    },
+    {
+        "timestamp": "2025-04-02T09:58:08.126060",
+        "original_file": "C:\\Users\\marty\\projects\\script_lang\\lista4\\mediafiles\\silent.mp3",
+        "output_format": "webm",
+        "output_file": "C:\\Users\\marty\\projects\\script_lang\\lista4\\CONV\\202504020958-silent.webm",
+        "program_used": "ffmpeg"
+    }
+]
