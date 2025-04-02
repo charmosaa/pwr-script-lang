@@ -12,8 +12,7 @@ def get_exe_in_path():
     for directory in path_dirs:
         if os.path.isdir(directory):
             files = os.listdir(directory)
-            executables = [file for file in files if os.access(os.path.join(directory, file), os.X_OK)]
-            dir_exe[directory] = executables
+            dir_exe[directory]  = [file for file in files if os.access(os.path.join(directory, file), os.X_OK)]
 
     return dir_exe
 
@@ -26,7 +25,7 @@ def print_exe():
     exe_dict = get_exe_in_path()
     for directory, executables in sorted(exe_dict.items()):
         print(f"{directory}:")
-        print(f"  {executables}\n")
+        print(f"\t{executables}\n")
 
 def main():
     if len(sys.argv) > 1:
