@@ -2,18 +2,19 @@ import sys
 import os
 import json
 import subprocess
+import argparse
 from collections import Counter
 
-def run_analysis(file_path):
+def analyze_file(file_path):
     result = subprocess.run(
-        ["python", "text_stats.py",file_path], 
+        ["python", "text_stats.py", file_path], 
         text=True, 
         capture_output=True
     )
     if result.returncode == 0:
         return json.loads(result.stdout)
     else: 
-        print(f"Error processing {file_path}: {e}")
+        print(f"Error processing {file_path}: {result.stderr}")
         return None
 
 def analyze_directory(directory):
@@ -28,7 +29,7 @@ def analyze_directory(directory):
 
     for file in files:
         file_path = f"{directory}/{file}"
-        stats = run_analysis(file_path)
+        stats = analyze_file(file_path)
         if stats:
             total_files += 1
             total_chars += stats["total_characters"]
@@ -54,13 +55,17 @@ def analyze_directory(directory):
     return summary
 
 def main():
-    directory = sys.argv[1]
-    if not os.path.isdir(directory):
-        print("Error: Provided path is not a directory.")
-        return
+    parser = argparse.ArgumentParser(description="Directory statistics command")
+    parser.add_argument("directory", help="Path to the directory with txt files to analyze")
+
+    args = parser.parse_args()
+
+    if not os.path.isdir(args.directory):
+        sys.stderr.write(f"Error: Directory '{args.directory}' does not exist or is not a valid directory.\n")
+        sys.exit(1)
     
-    summary = analyze_directory(directory)
-    print(json.dumps(summary, indent=4, ensure_ascii=False))
+    summary = analyze_directory(args.directory)
+    print(json.dumps(summary, indent=4))
 
 if __name__ == "__main__":
     main()

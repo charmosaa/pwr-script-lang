@@ -3,14 +3,11 @@ import re
 import argparse
 import json
 import sys
+import os
 
 def get_stats(file_path):
-    try:
-        with open(file_path, "r", encoding="utf-8") as file:
-            content = file.read()
-    except FileNotFoundError:
-        print("Error: File not found.")
-        return
+    with open(file_path, "r", encoding="utf-8") as file:
+        content = file.read()
 
     lines = content.splitlines()
     lines_total = len(lines)
@@ -40,16 +37,18 @@ def get_stats(file_path):
     return json.dumps(stats, indent=4)
 
 def main():
-    parser = argparse.ArgumentParser(description="Simplified tail command")
-    parser.add_argument("path", nargs="?", help="Path to the file")
+    parser = argparse.ArgumentParser(description="Text statistics command")
+    parser.add_argument("path", help="Path to the txt file")
+
     args = parser.parse_args()
 
+    # file not existing 
+    if not os.path.isfile(args.path):
+        sys.stderr.write(f"Error: File '{args.path}' does not exist or is not a valid file.\n")
+        sys.exit(1)
 
-    if not args.path:
-        parser.error("No input provided. Provide a file path or use stdin.")
-
-    else:
-        sys.stdout.write(get_stats(args.path))
+    # correct file - print statistics
+    sys.stdout.write(get_stats(args.path))
 
 if __name__ == "__main__":
     main()
