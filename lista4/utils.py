@@ -1,8 +1,6 @@
-# utils.py
 import os
 import json
 import datetime
-import subprocess
 
 def get_converted_dir():
     return os.environ.get("CONVERTED_DIR", os.path.join(os.getcwd(), "converted"))
