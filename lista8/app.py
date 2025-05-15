@@ -5,24 +5,7 @@ import datetime
 from tkcalendar import DateEntry
 
 import backend as bk
-
-class LogEntry:
-    def __init__(self, http_request):
-        self.timestamp = http_request.timestamp
-        self.uid = http_request.uid
-        self.orig_host = http_request.orig_host
-        self.orig_port = http_request.orig_port
-        self.resp_host = http_request.resp_host
-        self.resp_port = http_request.resp_port
-        self.method = http_request.method
-        self.host = http_request.host
-        self.uri = http_request.uri
-        self.status_code = http_request.status_code
-
-    def __str__ (self):
-        timestamp_str = self.timestamp.strftime('%Y-%m-%d %H:%M:%S.%f') if self.timestamp else "N/A"
-        raw_string = f"{timestamp_str} {self.uid} {self.orig_host} {self.orig_port} {self.resp_host} {self.resp_port} {self.method} {self.host} {self.uri} {self.status_code}"
-        return raw_string[:40] + "..."
+from log_entry import LogEntry
 
 class LogViewerApp:
     def __init__(self, master):
@@ -32,22 +15,27 @@ class LogViewerApp:
         self.style = ttk.Style()
         self.configure_styles()
 
+        # logs 
         self.log_entries = []
         self.filtered_log_entries = []
         self.current_index = -1
 
-        # UI elements - Use ttk.Button instead of tk.Button
+        # UI ELEMENTS
+
+        # button for loading the logs data
         self.load_button = ttk.Button(master, text="Load Logs", command=self.load_logs, style="Load.TButton")
         self.load_button.pack(pady=5)
 
+        # filter frame (dates, times and filter button)
         self.filter_frame = tk.Frame(master)
         self.filter_frame.pack(pady=5)
 
-        tk.Label(self.filter_frame, text="From date:").pack(side=tk.LEFT)
+        # start date and time choosing
+        tk.Label(self.filter_frame, text="From:").pack(side=tk.LEFT)
         self.from_date_calendar = DateEntry(self.filter_frame, width=12, background='darkgreen',
                                              foreground='white', borderwidth=2,
                                              date_pattern='yyyy-mm-dd')
-        self.from_date_calendar.pack(side=tk.LEFT)
+        self.from_date_calendar.pack(padx=5, side=tk.LEFT)
         self.from_time_hour = ttk.Spinbox(self.filter_frame, from_=0, to=23, width=3, format="%02.0f")
         self.from_time_hour.pack(side=tk.LEFT)
         tk.Label(self.filter_frame, text=":").pack(side=tk.LEFT)
@@ -57,11 +45,12 @@ class LogViewerApp:
         self.from_time_second = ttk.Spinbox(self.filter_frame, from_=0, to=59, width=3, format="%02.0f")
         self.from_time_second.pack(side=tk.LEFT)
 
-        tk.Label(self.filter_frame, text="To date:").pack(side=tk.LEFT)
+        # end date and time choosing
+        tk.Label(self.filter_frame, text="To:").pack(side=tk.LEFT)
         self.to_date_calendar = DateEntry(self.filter_frame, width=12, background='darkgreen',
                                            foreground='white', borderwidth=2,
                                            date_pattern='yyyy-mm-dd')
-        self.to_date_calendar.pack(side=tk.LEFT)
+        self.to_date_calendar.pack(padx=5,side=tk.LEFT)
         self.to_time_hour = ttk.Spinbox(self.filter_frame, from_=0, to=23, width=3, format="%02.0f")
         self.to_time_hour.pack(side=tk.LEFT)
         tk.Label(self.filter_frame, text=":").pack(side=tk.LEFT)
@@ -71,36 +60,41 @@ class LogViewerApp:
         self.to_time_second = ttk.Spinbox(self.filter_frame, from_=0, to=59, width=3, format="%02.0f")
         self.to_time_second.pack(side=tk.LEFT)
 
-        self.filter_button = ttk.Button(self.filter_frame, text="Filter Time", command=self.filter_by_time, style="Filter.TButton")
+        # filter button (by selected dates)
+        self.filter_button = ttk.Button(self.filter_frame, text="Filter", command=self.filter_by_time, style="Filter.TButton")
         self.filter_button.pack(side=tk.LEFT, padx=5)
 
+        # master frame - logs list
         self.master_frame = tk.Frame(master)
         self.master_frame.pack(pady=5)
         self.log_list_label = tk.Label(self.master_frame, text="Logs List:")
-        self.log_list_label.pack(side=tk.LEFT)
+        self.log_list_label.pack(side=tk.TOP)
         self.log_list = tk.Listbox(self.master_frame, width=80, height=15)
         self.log_list.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.log_list.bind('<<ListboxSelect>>', self.show_details)
 
+        # detail frame (for specific data about selected log)
         self.detail_frame = tk.LabelFrame(master, text="Log Details")
         self.detail_frame.pack(pady=5, padx=5, fill=tk.BOTH, expand=True)
 
         self.details_labels = {}
         self._create_detail_widgets()
 
+        # navigation frame - for previous and next buttons
         self.navigation_frame = tk.Frame(master)
-        self.navigation_frame.pack(pady=5)
+        self.navigation_frame.pack(pady=5, padx=5, fill=tk.BOTH)
         self.prev_button = ttk.Button(self.navigation_frame, text="Previous", command=self.prev_log, state=tk.DISABLED, style="Navigation.TButton")
         self.prev_button.pack(side=tk.LEFT)
         self.next_button = ttk.Button(self.navigation_frame, text="Next", command=self.next_log, state=tk.DISABLED, style="Navigation.TButton")
-        self.next_button.pack(side=tk.LEFT)
+        self.next_button.pack(side=tk.RIGHT)
 
     def configure_styles(self):
-        self.style.theme_use('clam') # Choose a theme
+        self.style.theme_use('clam') # app theme ('clam', 'alt', 'default', 'classic')
 
         self.style.configure("TButton", 
                              padding=5)
 
+        # button styles
         self.style.configure("Load.TButton",
                              foreground="white",
                              background="darkgreen",
@@ -186,9 +180,10 @@ class LogViewerApp:
         self.details_labels['method']['text'] = log_entry.method if log_entry.method is not None else "-"
         self.details_labels['host']['text'] = log_entry.host if log_entry.host is not None else "-"
         self.details_labels['uri']['text'] = log_entry.uri if log_entry.uri is not None else "-"
-        self.details_labels['status_code']['text'] = str(log_entry.status_code) if log_entry.status_code is not None else "-"
+        self.details_labels['status_code']['text'] = log_entry.status_code if log_entry.status_code is not None else "-"
 
     def filter_by_time(self):
+        # format input from fields
         from_date = self.from_date_calendar.get_date()
         to_date = self.to_date_calendar.get_date()
 
@@ -204,14 +199,19 @@ class LogViewerApp:
             from_datetime_str = f"{from_date.year}-{from_date.month:02d}-{from_date.day:02d} {from_hour}:{from_minute}:{from_second}"
             to_datetime_str = f"{to_date.year}-{to_date.month:02d}-{to_date.day:02d} {to_hour}:{to_minute}:{to_second}"
 
+            # to datetime
             from_datetime = datetime.datetime.strptime(from_datetime_str, '%Y-%m-%d %H:%M:%S')
             to_datetime = datetime.datetime.strptime(to_datetime_str, '%Y-%m-%d %H:%M:%S')
 
+            # filter
             self.filtered_log_entries = bk.get_entries_by_date(self.log_entries, from_datetime, to_datetime)
+            
+            # update the view
             self._update_log_list()
             self.current_index = -1 # unselect item
             self._update_details_view(LogEntry(bk.HttpRequest(None, '', '', None, '', None, '', '', '', None))) # clear details with an empty request
             self._update_navigation_buttons()
+            
         except ValueError:
             messagebox.showerror("Error", "Invalid date and time format.")
 
